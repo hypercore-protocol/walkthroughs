@@ -1,0 +1,31 @@
+{
+  "name": "hypercore-walkthrough",
+  "version": "1.0.0",
+  "description": "Get started with Hypercore",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andrewosh/hypercore-protocol-walkthroughs.git"
+  },
+  "keywords": [
+    "hypercore",
+    "walkthrough"
+  ],
+  "author": "Andrew Osheroff <andrewosh@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/andrewosh/hypercore-protocol-walkthroughs/issues"
+  },
+  "homepage": "https://github.com/andrewosh/hypercore-protocol-walkthroughs#readme",
+  "devDependencies": {
+    "hypercore": "^9.6.0",
+    "random-access-memory": "^3.1.1"
+  },
+  "dependencies": {
+    "chalk": "^4.1.0",
+    "hypercore-promisifier": "^1.0.3"
+  }
+}
