@@ -34,7 +34,6 @@ async function start () {
   const clone = toPromises(hypercore('./clone', core.key, {
     valueEncoding: 'utf-8',
     sparse: true, // When replicating, don't eagerly download all blocks.
-    eagerUpdate: true // But eagerly fetch length updates from peers.
   }))
 
   // A Hypercore can be replicated over any Node.js stream.
@@ -51,27 +50,9 @@ async function start () {
   console.log('First clone block:', await clone.get(0)) // 'hello'
   console.log('Second clone block:', await clone.get(1)) // 'world'
 
-  // Step 3: Make the clone listen for updates and download new blocks.
-  console.log(chalk.green('\nStep 3: Make the clone listen for updates and download new blocks.\n'))
-
-  // Since the clone's eagerly updating, it will be notified whenever the original is appended to.
-  // This notification is small -- blocks are still only downloaded when requested (sparse mode).
-  // Let's set up an event listener that will download and print all odd blocks. The even blocks will not be downloaded.
-  clone.on('append', async () => {
-    if (clone.length % 2) console.log('New block is odd, skipping download...')
-    else console.log(`Block: ${clone.length - 1}:`, await clone.get(clone.length - 1))
-  })
-
-  // Now let's append 50 new blocks to the original core at 100ms intervals.
-  // The clone will be notified after each append, and will download/display odd blocks.
-  for (let i = 0; i < 50; i++) {
+  for (let i = 0; i < 100; i++) {
     await core.append(`New Block ${i}`)
-    await delay(100)
   }
-
-  console.log(chalk.green('\nDone with the Hypercore walkthrough!\n'))
-}
-
-function delay (ms) {
-  return new Promise(resolve => setTimeout(resolve, ms))
+  await clone.update()
+  console.log(`Last Block (${clone.length - 1}):`, await clone.get(clone.length - 1))
 }
