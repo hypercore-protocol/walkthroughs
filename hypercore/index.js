@@ -1,6 +1,5 @@
 const chalk = require('chalk')
 const hypercore = require('hypercore')
-const ram = require('random-access-memory')
 const { toPromises } = require('hypercore-promisifier')
 
 start()
@@ -10,9 +9,9 @@ async function start () {
   // Step 1: Create our initial Hypercore.
   console.log(chalk.green('Step 1: Create the initial Hypercore\n'))
 
-  // Create our first Hypercore, with in-memory block storage.
+  // Create our first Hypercore, saving blocks to the 'main' directory.
   // We'll wrap it in a Promises interface, to make the walkthrough more readable.
-  const core = toPromises(hypercore(ram, {
+  const core = toPromises(hypercore('./main', {
     valueEncoding: 'utf-8' // The blocks will be UTF-8 strings.
   }))
 
@@ -32,7 +31,7 @@ async function start () {
   // Create a clone of the first Hypercore by creating a new core with the first's public key.
   // This would typically be done by a different peer.
   // This clone is not writable, since it doesn't have access to the first core's private key.
-  const clone = toPromises(hypercore(ram, core.key, {
+  const clone = toPromises(hypercore('./clone', core.key, {
     valueEncoding: 'utf-8',
     sparse: true, // When replicating, don't eagerly download all blocks.
     eagerUpdate: true // But eagerly fetch length updates from peers.
