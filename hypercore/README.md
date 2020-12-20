@@ -67,7 +67,6 @@ Let's simulate a remote peer by creating a read-only clone of the Hypercore from
 const clone = toPromises(hypercore('./clone', core.key, {
   valueEncoding: 'utf-8',
   sparse: true, // When replicating, don't eagerly download all blocks.
-  eagerUpdate: true // But eagerly fetch length updates from peers.
 }))
 ```
 
@@ -95,6 +94,16 @@ console.log('First clone block:', await clone.get(0)) // 'hello'
 console.log('Second clone block:', await clone.get(1)) // 'world'
 ```
 
+Let's append 100 more blocks, then request the last block from the clone. When this is done, the clone will have blocks 0, 1, and 101 available locally.
+
+```js
+for (let i = 0; i < 100; i++) {
+  await core.append(`New Block ${i}`)
+}
+await clone.update()
+await clone.get(clone.length - 1) // New Block 99
+```
+
 #### Sparse Downloading
 
 Readers do not need to download complete Hypercores in order to read individual blocks. A Hypercore might be massive (containing a huge database, say), but often readers will only be interested in a small subset of its blocks. This is especially true when working with data structures built on top of Hypercore.
@@ -103,13 +112,7 @@ The `sparse` flag turns on "sparse mode", which instructs a Hypercore to disable
 
 #### Updating
 
-
-
-
-### [Step 3](/hypercore/step-3.js): See Live Updates
-
-```js
-```
+When in sparse mode, you'll often want certain properties, like the core's length, to stay as up-to-date as possible. The `update` method will fetch small proofs from connected peers in order to update the core's metadata to a more recent version. 
 
 ### Next Steps
 
