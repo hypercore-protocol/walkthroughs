@@ -26,27 +26,47 @@ This example only has two dependencies: `hypercore` and `hypercore-promisifier`,
 
 Each step builds on the previous, and you can run them all from the command line with `node step-N.js`.
 
-### Step 1: Create a Writable Hypercore
+### [Step 1](/hypercore/step-1.js): Create a Writable Hypercore 
 
 The Hypercore constructor has two main parameters, `storage` and `key`, as well as a handful of options, several of which we'll work with in the next steps.
 
+Let's create a new core with UTF-8 encoded blocks, stored in the `./main` directory:
+```js
+const core = toPromises(hypercore('./main', {
+  valueEncoding: 'utf-8' // The blocks will be UTF-8 strings.
+}))
+```
+
+Hypercore currently only has a callback API, so we use the `hypercore-promisifier` module to wrap it in a Promises API. This keeps things more concise.
+
+We can append two new blocks to our core using the `append` method, which accepts either a single block or an Array of blocks:
+```js
+await core.append(['hello', 'world'])
+```
+
+Now that our main core has two blocks in it, let's create a clone and start replicating.
+
 #### The Storage Parameter
-Cores can be stored 
 
-#### The Key Parameter
+Cores can be stored in any instance of [`random-access-storage`](https://github.com/random-access-storage). Inside the random-access-storage GitHub repo, you'll storage modules for disk, memory-only, S3, IndexedDB, and more.
+
+If you pass in a String, Hypercore will use on-disk storage by default, and will treat the argument as the storage directory.
+
+#### Hypercore Keys
+
+All Hypercores are identified by two properties: A __public key__ and a __discovery key__, the latter of which is derived from the public key. Importantly, the public key gives peer __read capability__ -- if you have the key, you can exchange blocks with other peers.
+
+Without the key, a peer is unable to validate blocks, and the Hypercore transport protocol will block replication.
+
+Since the public key is also a read capability, it can't be used to discover other readers (by advertising it on a DHT, for example), as that would lead to capability leaks. The discovery key, being derived from the public key but lacking read capability, can be shared openly for peer discovery.
 
 
-`storage`: Either a String, or an instance of [`random-access-storage`](https://github.com/random-access-storage)
-2. `key`: 
+### [Step 2](/hypercore/step-2.js): Create a Read-Only Clone
+
 ```js
 ```
 
-### Step 2: Create a Read-Only Clone
-
-```js
-```
-
-### Step 3: See Live Updates
+### [Step 3](/hypercore/step-3.js): See Live Updates
 
 ```js
 ```
