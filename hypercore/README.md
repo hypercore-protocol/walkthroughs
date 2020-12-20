@@ -16,7 +16,7 @@ Hypercore is the bread-and-butter of the Hypercore Protocol. It is a lightweight
 
 A Hypercore can only have a __single writer, on a single machine__ -- the creator of the Hypercore is the only person who can modify to it, because they're the only one with the private key. That said, the writer can replicate to __many readers__, in a manner similar to BitTorrent.
 
-Unlike with BitTorrent, a Hypercore can be modified after its initial creation, and peers can receive live notifications whenever a Hypercore has grown.
+Unlike with BitTorrent, a Hypercore can be modified after its initial creation, and peers can receive live notifications whenever the writer adds new blocks.
 
 In this walkthrough, we'll create two Hypercores: one writable and one that's a read-only clone of the first, which will simulate a remote peer. We'll then show you how to initiate replication between the two cores, and have the reader download and display live updates.
 
@@ -24,16 +24,32 @@ In this walkthrough, we'll create two Hypercores: one writable and one that's a 
 
 This example only has two dependencies: `hypercore` and `hypercore-promisifier`, which gives you a Promises interface for Hypercore.
 
-You can run the complete example with the following command inside this module's directory:
-```
-> npm i && npm start
-```
+Each step builds on the previous, and you can run them all from the command line with `node step-N.js`.
 
-### Step 1: Create a Hypercore
+### Step 1: Create a Writable Hypercore
+
+The Hypercore constructor has two main parameters, `storage` and `key`, as well as a handful of options, several of which we'll work with in the next steps.
+
+#### The Storage Parameter
+Cores can be stored 
+
+#### The Key Parameter
+
+
+`storage`: Either a String, or an instance of [`random-access-storage`](https://github.com/random-access-storage)
+2. `key`: 
+```js
+```
 
 ### Step 2: Create a Read-Only Clone
 
+```js
+```
+
 ### Step 3: See Live Updates
+
+```js
+```
 
 ### Next Steps
 
