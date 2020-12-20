@@ -60,11 +60,51 @@ Without the key, a peer is unable to validate blocks, and the Hypercore transpor
 
 Since the public key is also a read capability, it can't be used to discover other readers (by advertising it on a DHT, for example), as that would lead to capability leaks. The discovery key, being derived from the public key but lacking read capability, can be shared openly for peer discovery.
 
-
 ### [Step 2](/hypercore/step-2.js): Create a Read-Only Clone
 
+Let's simulate a remote peer by creating a read-only clone of the Hypercore from the previous step. 
 ```js
+const clone = toPromises(hypercore('./clone', core.key, {
+  valueEncoding: 'utf-8',
+  sparse: true, // When replicating, don't eagerly download all blocks.
+  eagerUpdate: true // But eagerly fetch length updates from peers.
+}))
 ```
+
+Since this clone is going to be downloading data from the original core, we've specified a few additional options, `sparse` and `eagerUpdate`, described below.
+
+The `replicate` method can be used to create a Duplex stream that implements the [Hypercore Protocol](https://github.com/hypercore-protocol/hypercore-protocol). We can pipe together two replication streams, one from the original core and one from the clone, in order to start exchanging blocks:
+
+```js
+const firstStream = core.replicate(true, { live: true })
+const cloneStream = clone.replicate(false, { live: true })
+
+// Pipe the stream together to begin replicating.
+firstStream.pipe(cloneStream).pipe(firstStream)
+```
+
+These replication streams are end-to-end encrypted using the [NOISE protocol](https://noiseprotocol.org/). The first argument (`true` or `false`) indicates which peer initiated the replication process.
+
+In this example, we're directly piping the two replication streams together, but in real-world scenarios you'll typically pipe into network streams (such as TCP or UTP peer connections), which we'll explore in the Hyperswarm walkthrough.
+
+Both replication streams are "live", meaning they'll continue replicating indefinitely.
+
+Now that the clone has a connected peer, we can start requesting blocks. These blocks will be lazily downloaded, because the clone was constructed in sparse mode:
+```js
+console.log('First clone block:', await clone.get(0)) // 'hello'
+console.log('Second clone block:', await clone.get(1)) // 'world'
+```
+
+#### Sparse Downloading
+
+Readers do not need to download complete Hypercores in order to read individual blocks. A Hypercore might be massive (containing a huge database, say), but often readers will only be interested in a small subset of its blocks. This is especially true when working with data structures built on top of Hypercore.
+
+The `sparse` flag turns on "sparse mode", which instructs a Hypercore to disable block downloading unless a block is explicitly requested (through `get` or `createReadStream`). If `sparse` is false, then Hypercore will automatically download as many blocks as possibly from every peer it connects to.
+
+#### Updating
+
+
+
 
 ### [Step 3](/hypercore/step-3.js): See Live Updates
 
