@@ -133,7 +133,7 @@ Hyperswarm's RemoteNetworker API provides a `configure` method with `announce` a
 
 In many cases, you just want to make a RemoteHypercore available to the network, without worrying about the specifics. The Hyperspace client's `replicate` function takes a RemoteHypercore as its one argument: `client.replicate(core)` is effectively sugaring around `client.network.configure(core.discoveryKey, { announce: true, lookup: true })`.
 
-### Replicate With a Second RemoteHypercore
+### Connect the Two Cores
 
 The first RemoteHypercore contains two blocks, and is now being announced on the Hyperswarm DHT. It's time to create a RemoteHypercore on the second Hyperspace instance, which is simulating a remote peer.
 
