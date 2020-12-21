@@ -71,7 +71,7 @@ You can shut down a Hyperspace server with the `close` method. Internally, this 
 
 This Hyperswarm shutdown can take a few seconds, sometimes up to 10.
 
-## [Step 2](2-replicate-hypercores.js): Replicate a RemoteHypercore
+## [Step 2](2-replicate-hypercores.js): Replicate RemoteHypercores
 
 First, we'll create two Hyperspace clients, one for each server we started in Step 1:
 
