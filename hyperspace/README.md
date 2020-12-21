@@ -108,7 +108,7 @@ Now we want to make this new Hypercore available to the Hyperswarm network. Ther
 1. Through the RemoteNetworker API on `client.network`.
 2. Through the `client.replicate` function.
 
-For this walkthrough, we'll use the `replicate function`, and we'll also log whenever the Hypercore connects to new peers:
+For this walkthrough, we'll use the `replicate` function, and we'll also log whenever the Hypercore connects to new peers:
 ```js
 // Log when the core has any new peers.
 localCore.on('peer-add', () => {
