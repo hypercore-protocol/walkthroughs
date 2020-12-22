@@ -8,6 +8,6 @@
 
 ## [Step-2](2-iterators.js): Iterating Over Sorted Streams
 
-## [Step-3](3-diff.js): Diffing Between Database Versions
+## [Step-3](3-diffs.js): Diffing Between Database Versions
 
 ## [Step-4](4-leveldown.js): Hyperbee Implements LevelDOWN
