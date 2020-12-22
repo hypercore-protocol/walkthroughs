@@ -1,0 +1,23 @@
+{
+  "name": "hyperbee-walkthrough",
+  "version": "1.0.0",
+  "description": "P2P indexing with Hyperbee",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "hyperbee"
+  ],
+  "author": "Andrew Osheroff <andrewosh@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^4.1.0",
+    "hyperbee": "^1.1.1",
+    "hyperbeedown": "^2.0.1",
+    "hypercore": "^9.6.0",
+    "hyperspace": "^3.18.0",
+    "levelgraph": "^2.1.1",
+    "ram": "0.0.3"
+  }
+}
