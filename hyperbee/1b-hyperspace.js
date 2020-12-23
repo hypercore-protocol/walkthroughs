@@ -7,7 +7,8 @@ start()
 async function start () {
   // A Hyperbee can also be constructed with a RemoteHypercore instance.
   const { client, cleanup } = await createHyperspaceSimulator()
-  const core = client.corestore().get()
+  const store = client.corestore('hyperbee-exercise')
+  const core = store.get({ name: 'hyperbee-1' })
 
   // It accepts LevelDB-style key/value encoding options.
   const db = new Hyperbee(core, {
