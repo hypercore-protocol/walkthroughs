@@ -1,0 +1,21 @@
+{
+  "name": "hyperdrive-walkthrough",
+  "version": "1.0.0",
+  "description": "Sharing Files with Hyperdrive",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "hyperdrive"
+  ],
+  "author": "Paul Frazee <pfrazee@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^4.1.0",
+    "hyperdrive": "^10.19.1",
+    "hyperspace": "^3.18.1",
+    "pump": "^3.0.0",
+    "ram": "0.0.3"
+  }
+}
