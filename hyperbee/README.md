@@ -27,14 +27,71 @@ This walkthrough covers the following topics:
 1. Basic Operations (`get`, `put`, and `batch`)
 2. Iteration (`createReadStream`)
 3. Diffing (`createDiffStream`)
-4. Using Hyperbee with LevelDB 
+4. Sub-Databases (`sub`)
+5. Using Hyperbee with LevelDB 
 
 ## [Step-1](1a-basics.js): Basic Operations
 
-### [Using Hyperbee with Hyperspace](1b-hyperspace.js)
+### Constructing a Hyperbee
 
-## [Step-2](2-iterators.js): Iterating Over Sorted Streams
+A Hyperbee is constructed with either a single Hypercore, or a single RemoteHypercore (if you're using Hyperspace).
 
-## [Step-3](3-diffs.js): Diffing Between Database Versions
+To create a Hyperbee using a standalone Hypercore:
+```js
+// A Hyperbee is stored as an embedded index within a single Hypercore.
+const core = hypercore(ram)
+const Hyperbee = require('hyperbee')
 
-## [Step-4](4-leveldown.js): Hyperbee Implements LevelDOWN
+// It accepts LevelDB-style key/value encoding options.
+const db = new Hyperbee(core, {
+  keyEncoding: 'utf-8',
+  valueEncoding: 'utf-8'
+})
+await db.ready()
+```
+
+As with Level, Hyperbee accepts `keyEncoding` and `valueEncoding` in its constructors. Both default to `binary`.
+
+Creating a Hyperbee with Hyperspace is pretty much the same. In this example, we'll use the Hyperspace "simulator" to avoid saving any state to your computer's disk:
+```js
+const Hyperbee = require('hyperbee')
+const createHyperspaceSimulator = require('hyperspace/simulator')
+
+// A Hyperbee can also be constructed with a RemoteHypercore instance.
+const { client, cleanup } = await createHyperspaceSimulator()
+const store = client.corestore('hyperbee-exercise')
+const core = store.get({ name: 'hyperbee-1' })
+
+const db = new Hyperbee(core, {
+  keyEncoding: 'utf-8',
+  valueEncoding: 'utf-8'
+})
+await db.ready()
+```
+
+### Getting and Inserting KV-Pairs
+
+Keys and values can be inserted with the `put` method:
+```js
+await db.put('a', 'b')
+await db.put('c', 'd')
+```
+
+If you're doing a bulk insertion of many KV-pairs, you can use the `batch` method to atomically commit many entries:
+```js
+const b = db.batch()
+
+await b.put('e', 'f')
+await b.put('g', 'h')
+
+// When a batch is flushed, it's atomically committed to the Hyperbee.
+await b.flush()
+```
+
+## [Step 2](2-iterators.js): Iterating Over Sorted Streams
+
+## [Step 3](3-diffs.js): Diffing Between Database Versions
+
+## [Step 4](4-sub.js): Sub-Databases
+
+## [Step 5](5-leveldown.js): Hyperbee Implements LevelDOWN
