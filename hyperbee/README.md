@@ -180,4 +180,66 @@ for await (const { left, right } of db.createDiffStream(oldVersion)) {
 
 ## [Step 4](4-sub.js): Sub-Databases
 
-## [Step 5](5-leveldown.js): Hyperbee Implements LevelDOWN
+Oftentimes when working with a Hyperbee, it's useful to create independent "sub-databases" within a parent database.
+
+As an example, you might be storing two indexes inside of one database, one that indexes records by name, and the other by age. You can manually append prefixes to each index record you insert (e.g. `by-name!alice`, `by-age!73`), but this quickly grows tedious.
+
+The `sub` method simplifies this:
+```js
+const db = new Hyperbee(hypercore(ram), {
+  keyEncoding: 'utf-8',
+  valueEncoding: 'utf-8',
+  sep: '!'
+})
+
+// A sub-database will append a prefix to every key it inserts.
+// This prefix ensure that the sub acts as a separate "namespace" inside the parent db.
+const sub1 = db.sub('sub1')
+const sub2 = db.sub('sub2')
+
+await sub1.put('a', 'b')
+await sub2.put('c', 'd')
+
+for await (const { key, value } of sub1.createReadStream()) {
+  // 'a' -> 'b'
+}
+
+for await (const { key, value } of sub2.createReadStream()) {
+  // 'c' -> 'd'
+}
+
+// You can see the sub prefixes by iterating over the parent database.
+for await (const { key, value } of db.createReadStream()) {
+  // 'sub1!a' -> 'b'
+  // 'sub2!c' -> 'd'
+}
+```
+
+In the example above, a custom separator is defined through the `sep` constructor option, which makes the final `createReadStream` example more legible. If you don't set this option, a 1-byte zero-filled Buffer will be used by default.
+
+### Key Encodings
+
+If you plan on using numeric keys, you'll want to first encode those keys such that they sort lexicographically. To do this, you can use the [`lexicographic-integer`](https://www.npmjs.com/package/lexicographic-integer) module.
+
+Exercise 13 of the [P2P Indexing and Search](https://github.com/hypercore-protocol/p2p-indexing-and-search/blob/main/problems/13.md) workshop covers this in more detail.
+
+## [Step 5](5-leveldown.js): Hyperbee Implements Leveldown
+
+*Note: Using Hyperbee as a leveldown is still pretty experimental! If you go down this road, be prepared to file a bug report or two.*
+
+Hyperbee has all the features necessary to be a [leveldown backend](https://www.npmjs.com/package/abstract-leveldown), meaning it can be used as the data store for [tons of modules](https://github.com/Level/awesome) in the Level ecosystem.
+
+A small wrapper module, [`hyperbeedown`](https://www.npmjs.com/package/hyperbeedown), implements the leveldown plumbing.
+
+It's pretty straightforward to use Hyperbee inside modules that work with Level. Here's a code snippet that uses Hyperbee as the backing store for a [PouchDB](https://pouchdb.com/) instance:
+```js
+const tree = new Hyperbee(hypercore(ram), {
+  keyEncoding: 'utf-8'
+})
+const db = new PouchDB('my-database', {
+  db: () => new HyperbeeDown(tree)
+})
+
+await db.put({ _id: '1', hello: 'world' })
+const doc = await db.get('1')
+```
