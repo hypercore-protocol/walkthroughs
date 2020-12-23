@@ -35,16 +35,16 @@ async function start () {
   console.log(chalk.green('Reading KV-pairs with the \'get\' method:\n'))
 
   // KV-pairs can be read with the `get` method.
-  console.log(chalk.blue('Value for \'a\':', (await db.get('a')).value))
-  console.log(chalk.blue('Value for \'e\':', (await db.get('e')).value))
-  console.log(chalk.blue('Value for \'c\' (deleted):', await db.get('c')))
+  console.log('Value for \'a\':', (await db.get('a')).value)
+  console.log('Value for \'e\':', (await db.get('e')).value)
+  console.log('Value for \'c\' (deleted):', await db.get('c'))
 
   console.log(chalk.green('\nReading KV-pairs with \'createReadStream\':\n'))
 
   // createReadStream can be used to yield KV-pairs in sorted order.
   // createReadStream returns a ReadableStream that supports async iteration.
   for await (const { key, value } of db.createReadStream()) {
-    console.log(chalk.blue(`${key} -> ${value}`))
+    console.log(`${key} -> ${value}`)
   }
 
   // Shut down the Hyperspace simulator.

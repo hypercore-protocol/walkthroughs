@@ -33,7 +33,7 @@ async function start () {
   for (const [name, stream] of streams) {
     console.log(chalk.green('\n' + name + ':\n'))
     for await (const { key, value } of stream) {
-      console.log(chalk.blue(`${key} -> ${value}`))
+      console.log(`${key} -> ${value}`)
     }
   }
 }

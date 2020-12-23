@@ -16,7 +16,7 @@ async function start () {
   const keys = 'abcdefghijkl'
   for (const char of keys) {
     await db.put(char, char)
-    console.log(chalk.blue(`Version after inserting ${char}: ${db.version}`))
+    console.log(`Version after inserting ${char}: ${db.version}`)
   }
 
   // The createDiffStream method allows us to observe differences between versions of the Hyperbee.
@@ -24,7 +24,7 @@ async function start () {
   console.log(chalk.green('\nDiff between the latest version, and version 9:\n'))
   for await (const { left, right } of db.createDiffStream(9)) {
     // Since we've only inserted values, `right` will always be null.
-    console.log(chalk.blue(`left -> ${left.key}, right -> ${right}`))
+    console.log(`left -> ${left.key}, right -> ${right}`)
   }
 
   // Before modifying the database, let's record the current database version.
@@ -41,7 +41,7 @@ async function start () {
     // For keys 'k' and 'l', `right` is set because it's a deletion.
     // For 'm', `left` is set because it's a new insertion.
     // For 'a', both `left` and `right` are set because it's a modification
-    console.log(chalk.blue(`left -> ${left && left.key}, right -> ${right && right.key}`))
+    console.log((`left -> ${left && left.key}, right -> ${right && right.key}`))
   }
 
   // We can also check out a database snapshot for an old version
@@ -50,6 +50,6 @@ async function start () {
   console.log(chalk.green('\nSnapshot diff to version 9:\n'))
   for await (const { left, right } of snapshot.createDiffStream(9)) {
     // Since we've only inserted values, `right` will always be null.
-    console.log(chalk.blue(`left -> ${left.key}, right -> ${right}`))
+    console.log(`left -> ${left.key}, right -> ${right}`)
   }
 }
