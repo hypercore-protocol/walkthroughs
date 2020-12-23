@@ -69,7 +69,7 @@ const db = new Hyperbee(core, {
 await db.ready()
 ```
 
-### Getting and Inserting KV-Pairs
+### Getting, Inserting, and Deleting KV-Pairs
 
 Keys and values can be inserted with the `put` method:
 ```js
@@ -86,6 +86,17 @@ await b.put('g', 'h')
 
 // When a batch is flushed, it's atomically committed to the Hyperbee.
 await b.flush()
+```
+
+To read out a single kv-pair, you can use the `get` method:
+```js
+const node = await db.get('a')) // An object of the form { key, value }
+```
+`get` will either return an object of the form `{ key, value }`, or `null`.
+
+To delete a kv-pair, use the `del` method:
+```js
+await db.del('c')
 ```
 
 ## [Step 2](2-iterators.js): Iterating Over Sorted Streams
