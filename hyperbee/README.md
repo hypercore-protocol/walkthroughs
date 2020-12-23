@@ -131,8 +131,8 @@ await b.flush()
 ```
 
 Now we can see how different `createReadStream` options affect the pairs that are returned:
-|                  Result                                   Options                    | 
-| ----------------------------------------:|:-----------------------------------------:|
+|                  Result                  |                Options                    | 
+| ---------------------------------------- | ----------------------------------------- |
 | First 10 pairs                           | `{ limit: 10 }`                           |
 | Last 10 pairs, reversed                  | `{ limit: 10, reverse: true }`            |
 | Between 'a' and 'd', non-inclusive       | `{ gt: 'a', lt: 'd' }`                    |
