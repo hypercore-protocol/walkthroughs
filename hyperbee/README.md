@@ -139,8 +139,44 @@ Now we can see how different `createReadStream` options affect the pairs that ar
 | Between 'a' and 'd', inclusive           | `{ gte: 'a', lte: 'd' }`                  |  
 | Between 'e' and 'f', inclusive, reversed | `{ gte: 'e', 'lte: 'f', reversed: true }` |
 
+### Sparse Downloading
 
-## [Step 3](3-diffs.js): Diffing Between Database Versions
+Importantly, the number of blocks that a reader needs to download to complete a range query is entirely dependent on how specific that query is. 
+
+A `createReadStream` with no options will do a full range scan, and thus download every block.
+
+A more narrowly-specified range query will only need to download a few blocks from the network.
+
+## [Step 3](3-diffs.js): Snapshots and Diffing
+
+By virtue of being built on a Hypercore, an append-only data structure, Hyperbees maintain their complete version history. You can "check out" a read-only snapshot of any historical version using the `checkout` method.
+
+A snapshot is just a read-only Hyperbee, and provides the same methods, like `createReadStream`:
+```js
+const db = new Hyperbee(hypercore(ram), { keyEncoding: 'utf-8' })
+
+await db.put('a', 'b')
+await db.put('c', 'd')
+const oldVersion = db.version // Let's mark the version before the last insertion
+await db.put('e', 'f')
+await db.del('c')
+
+for await (const { key, value } of db.checkout(oldVersion).createReadStream()) {
+  // Entries 'a' and 'c' will be returned
+}
+```
+
+Hyperbee can also efficiently determine which kv-pairs have been added, removed, or modified (a diff) between two versions. Since large numbers of entries might have changed, the diffing functionality is exposed as a stream, just like `createReadStream`.
+
+A diff stream yields entries of the form `{ left, right }`, where `right` is the earlier value and `left` is the later value for a given key.
+
+`createDiffStream` supports the same options as `createReadStream`, minus `reverse`. Using the database constructed above:
+```js
+for await (const { left, right } of db.createDiffStream(oldVersion)) {
+  // { left: { key: 'e', value: 'f' }, right: null }  // 'e' -> 'f' was added
+  // { left: null, right: { key: 'c', value: 'd' }    // 'c' -> 'd' was deleted
+}
+```
 
 ## [Step 4](4-sub.js): Sub-Databases
 
