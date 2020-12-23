@@ -7,8 +7,7 @@ start()
 async function start () {
   const db = new Hyperbee(hypercore(ram), {
     keyEncoding: 'utf-8',
-    valueEncoding: 'utf-8',
-    sep: '!'
+    valueEncoding: 'utf-8'
   })
 
   // A sub-database will append a prefix to every key it inserts.
