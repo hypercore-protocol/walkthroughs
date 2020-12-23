@@ -101,6 +101,45 @@ await db.del('c')
 
 ## [Step 2](2-iterators.js): Iterating Over Sorted Streams
 
+Hyperbee provides several methods that return sorted streams over ranges of kv-pairs. This step will cover standard range iteration, which uses the `createReadStream` method.
+
+*Note: Hyperbee's `createReadStream` is identical to Level's `createReadStream` method.*
+
+Here's how to create a simple sorted stream that yields all kv-pairs in the database:
+```js
+for await (const { key, value } of db.createReadStream()) {
+  console.log(`${key} -> ${value}`)
+}
+```
+
+For more specific ranges, you can use one or more of the following options:
+* `gt`: Yield all pairs with key greater than this value
+* `gte`: Yield all pairs with key greater than or equal to this value
+* `lt`: Yield all pairs with key less than this value
+* `lte`: Yield all pairs with key less than or equal to this value
+* `reverse`: Yield results in reverse order
+* `limit`: Only yield this many results
+
+Let's create a database with many kv-pairs of the form 'a' -> 'a', 'b' -> 'b', etc:
+```js
+const keys = 'abcdefghijklmnopqrstuvwxyz'
+const b = db.batch()
+for (const char of keys) {
+  await b.put(char, char)
+}
+await b.flush()
+```
+
+Now we can see how different `createReadStream` options affect the pairs that are returned:
+|                  Result                                   Options                    | 
+| ----------------------------------------:|:-----------------------------------------:|
+| First 10 pairs                           | `{ limit: 10 }`                           |
+| Last 10 pairs, reversed                  | `{ limit: 10, reverse: true }`            |
+| Between 'a' and 'd', non-inclusive       | `{ gt: 'a', lt: 'd' }`                    |
+| Between 'a' and 'd', inclusive           | `{ gte: 'a', lte: 'd' }`                  |  
+| Between 'e' and 'f', inclusive, reversed | `{ gte: 'e', 'lte: 'f', reversed: true }` |
+
+
 ## [Step 3](3-diffs.js): Diffing Between Database Versions
 
 ## [Step 4](4-sub.js): Sub-Databases
