@@ -61,7 +61,7 @@ async function start () {
     // Start seeding the Hypercore (this will connect to the first Hyperspace instance)
     remoteClient.replicate(core)
 
-    // The core should not have one connected peer, so we can read the first two blocks.
+    // The core should now have one connected peer, so we can read the first two blocks.
     console.log(chalk.green('First two blocks:', [
       await core.get(0),
       await core.get(1)
